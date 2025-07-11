@@ -38,9 +38,13 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
                 return
             }
             do {
-                try sampler.loadSoundBankInstrument(at: url, program: UInt8(program), bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB), bankLSB: UInt8(bank))
+                let isPercussion = (bank == 128)
+                let bankMSB: UInt8 = isPercussion ? UInt8(kAUSampler_DefaultPercussionBankMSB) : UInt8(kAUSampler_DefaultMelodicBankMSB)
+                let bankLSB: UInt8 = isPercussion ? 0 : UInt8(bank)
+                
+                try sampler.loadSoundBankInstrument(at: url, program: UInt8(program), bankMSB: bankMSB, bankLSB: bankLSB)
             } catch {
-                result(FlutterError(code: "SOUND_FONT_LOAD_FAILED", message: "Failed to load soundfont", details: nil))
+                result(FlutterError(code: "SOUND_FONT_LOAD_FAILED1", message: "Failed to load soundfont", details: nil))
                 return
             }
             chSamplers.append(sampler)
@@ -60,9 +64,13 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         let soundfontSampler = soundfontSamplers[sfId]![channel]
         let soundfontUrl = soundfontURLs[sfId]!
         do {
-            try soundfontSampler.loadSoundBankInstrument(at: soundfontUrl, program: UInt8(program), bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB), bankLSB: UInt8(bank))
+            let isPercussion = (bank == 128)
+            let bankMSB: UInt8 = isPercussion ? UInt8(kAUSampler_DefaultPercussionBankMSB) : UInt8(kAUSampler_DefaultMelodicBankMSB)
+            let bankLSB: UInt8 = isPercussion ? 0 : UInt8(bank)
+            
+            try soundfontSampler.loadSoundBankInstrument(at: soundfontUrl, program: UInt8(program), bankMSB: bankMSB, bankLSB: bankLSB)
         } catch {
-            result(FlutterError(code: "SOUND_FONT_LOAD_FAILED", message: "Failed to load soundfont", details: nil))
+            result(FlutterError(code: "SOUND_FONT_LOAD_FAILED2", message: "Failed to load soundfont", details: nil))
             return
         }
         soundfontSampler.sendProgramChange(UInt8(program), bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB), bankLSB: UInt8(bank), onChannel: UInt8(channel))
@@ -83,21 +91,6 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         let sfId = args["sfId"] as! Int
         let soundfontSampler = soundfontSamplers[sfId]![channel]
         soundfontSampler.stopNote(UInt8(note), onChannel: UInt8(channel))
-        result(nil)
-    case "stopAllNotes":
-        let args = call.arguments as! [String: Any]
-        let sfId = args["sfId"] as! Int
-        let soundfontSampler = soundfontSamplers[sfId]
-        if soundfontSampler == nil {
-            result(FlutterError(code: "SOUND_FONT_NOT_FOUND", message: "Soundfont not found", details: nil))
-            return
-        }
-        soundfontSampler?.forEach { (sampler) in
-            for note in 0...127 {
-                sampler.stopNote(UInt8(note), onChannel: UInt8(soundfontSampler!.firstIndex(of: sampler)!))
-            }
-        }
-        result(nil)
     case "unloadSoundfont":
         let args = call.arguments as! [String:Any]
         let sfId = args["sfId"] as! Int
