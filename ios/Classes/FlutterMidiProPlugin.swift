@@ -55,6 +55,18 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         audioEngines[soundfontIndex] = chAudioEngines
         soundfontIndex += 1
         result(soundfontIndex-1)
+    case "stopAllNotes":
+        let args = call.arguments as! [String: Any]
+        let sfId = args["sfId"] as! Int
+        let soundfontSampler = soundfontSamplers[sfId]
+        if soundfontSampler == nil {
+            result(FlutterError(code: "SOUND_FONT_NOT_FOUND", message: "Soundfont not found", details: nil))
+            return
+        }
+        soundfontSampler!.forEach { (sampler) in
+            sampler.stopAllNotes()
+        }
+        result(nil)
     case "selectInstrument":
         let args = call.arguments as! [String: Any]
         let sfId = args["sfId"] as! Int
@@ -91,6 +103,7 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         let sfId = args["sfId"] as! Int
         let soundfontSampler = soundfontSamplers[sfId]![channel]
         soundfontSampler.stopNote(UInt8(note), onChannel: UInt8(channel))
+        result(nil)
     case "unloadSoundfont":
         let args = call.arguments as! [String:Any]
         let sfId = args["sfId"] as! Int
