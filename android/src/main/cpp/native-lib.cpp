@@ -13,20 +13,22 @@ extern "C" JNIEXPORT int JNICALL
 Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_loadSoundfont(JNIEnv* env, jclass clazz, jstring path, jint bank, jint program) {
     settings[nextSfId] = new_fluid_settings();
     fluid_settings_setnum(settings[nextSfId], "synth.gain", 1.0);
-    fluid_settings_setstr(settings[nextSfId], "audio.period-size", "64");
-    fluid_settings_setstr(settings[nextSfId], "audio.periods", "4");
-    fluid_settings_setstr(settings[nextSfId], "audio.realtime-prio", "99");
-    fluid_settings_setstr(settings[nextSfId], "synth.sample-rate", "44100");
-    fluid_settings_setstr(settings[nextSfId], "synth.polyphony", "32");
-    
+    // sayısal değerleri uygun setter ile ayarla
+    fluid_settings_setint(settings[nextSfId], "audio.period-size", 64);
+    fluid_settings_setint(settings[nextSfId], "audio.periods", 4);
+    fluid_settings_setint(settings[nextSfId], "audio.realtime-prio", 99);
+    fluid_settings_setnum(settings[nextSfId], "synth.sample-rate", 44100.0);
+    fluid_settings_setint(settings[nextSfId], "synth.polyphony", 32);
+
     const char *nativePath = env->GetStringUTFChars(path, nullptr);
     synths[nextSfId] = new_fluid_synth(settings[nextSfId]);
-    drivers[nextSfId] = new_fluid_audio_driver(settings[nextSfId], synths[nextSfId]);
     int sfId = fluid_synth_sfload(synths[nextSfId], nativePath, 0);
     for (int i = 0; i < 16; i++) {
         fluid_synth_program_select(synths[nextSfId], i, sfId, bank, program);
     }
     env->ReleaseStringUTFChars(path, nativePath);
+    // Audio driver'ı en son oluştur
+    drivers[nextSfId] = new_fluid_audio_driver(settings[nextSfId], synths[nextSfId]);
     soundfonts[nextSfId] = sfId;
     nextSfId++;
     return nextSfId - 1;
