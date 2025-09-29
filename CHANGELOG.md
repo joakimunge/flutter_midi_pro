@@ -57,3 +57,7 @@
 ## 3.1.4
 
 - Cmake minsdkversion fix
+
+## 3.1.5
+
+- Support for 16kb page size
