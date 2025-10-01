@@ -13,9 +13,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA
+ * License along with this library; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _FLUIDSYNTH_SETTINGS_H
@@ -38,16 +37,19 @@ extern "C" {
  *     {
  *       fluid_settings_t *settings;
  *       fluid_synth_t *synth;
- *       fluid_audio_driver_t *driver;
+ *       fluid_audio_driver_t *adriver;
  *
  *       settings = new_fluid_settings ();
  *       fluid_settings_setstr(settings, "audio.driver", "alsa");
  *       // ... change settings ...
  *       synth = new_fluid_synth (settings);
- *       driver = new_fluid_audio_driver (settings, synth);
+ *       adriver = new_fluid_audio_driver (settings, synth);
  *       // ...
  *     }
  * @endcode
+ * All string settings are encoded in UTF-8. This includes the names
+ * of the audio and MIDI devices, exposed as setting options.
+ * 
  * @sa @ref CreatingSettings
  *
  * @{
