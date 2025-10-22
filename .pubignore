@@ -1,2 +1,6 @@
 # Ignore "example" folder
 example/
+
+# Exclude 32-bit x86 native libs from the published package
+# (keeps x86_64 intact). Paths are relative to package root.
+android/src/main/cpp/fluidsynth/lib/x86/**
