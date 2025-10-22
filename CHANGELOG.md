@@ -61,3 +61,7 @@
 ## 3.1.5
 
 - Support for 16kb page size
+
+## 3.1.6
+
+- Version bump for android side
