@@ -1,8 +1,8 @@
-set(OPUS_VERSION 2.3.4)
-set(OPUS_VERSION_STRING 2.3.4)
-set(OPUS_VERSION_MAJOR 2)
-set(OPUS_VERSION_MINOR 3)
-set(OPUS_VERSION_PATCH 4)
+set(OPUS_VERSION 0)
+set(OPUS_VERSION_STRING 0)
+set(OPUS_VERSION_MAJOR 0)
+set(OPUS_VERSION_MINOR )
+set(OPUS_VERSION_PATCH )
 
 
 ####### Expanded from @PACKAGE_INIT@ by configure_package_config_file() #######
@@ -31,7 +31,8 @@ endmacro()
 ####################################################################################
 
 set_and_check(OPUS_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")
-set_and_check(OPUS_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(OPUS_INCLUDE_DIR ${OPUS_INCLUDE_DIR};${OPUS_INCLUDE_DIR}/opus)
+set(OPUS_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include;${PACKAGE_PREFIX_DIR}/include/opus")
 
 include(${CMAKE_CURRENT_LIST_DIR}/OpusTargets.cmake)
 

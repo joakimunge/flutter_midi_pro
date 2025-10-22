@@ -8,7 +8,7 @@ includedir=/home/vsts/work/1/s/android-build-root/opt/android/include
 Name: Opus
 Description: Opus IETF audio codec ( build)
 URL: https://opus-codec.org/
-Version: 0.8.0
+Version: 0
 Requires:
 Conflicts:
 Libs: -L/home/vsts/work/1/s/android-build-root/opt/android/lib -lopus

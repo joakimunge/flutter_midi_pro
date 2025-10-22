@@ -5,6 +5,6 @@ includedir=${prefix}/include
 
 Name: Oboe
 Description: Oboe library
-Version: 1.7.0
+Version: 1.9.0
 Libs: -L${libdir} -loboe -landroid -llog
 Cflags: -I${includedir}

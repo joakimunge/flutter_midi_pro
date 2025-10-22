@@ -13,9 +13,8 @@
  * Lesser General Public License for more details.
  *  
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA
+ * License along with this library; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _FLUIDSYNTH_VERSION_H
@@ -31,10 +30,10 @@ extern "C" {
  *
  * @{
  */
-#define FLUIDSYNTH_VERSION       "2.3.5"           /**< String constant of libfluidsynth version. */
+#define FLUIDSYNTH_VERSION       "2.4.8"         /**< String constant of libfluidsynth version. */
 #define FLUIDSYNTH_VERSION_MAJOR 2     /**< libfluidsynth major version integer constant. */
-#define FLUIDSYNTH_VERSION_MINOR 3     /**< libfluidsynth minor version integer constant. */
-#define FLUIDSYNTH_VERSION_MICRO 5     /**< libfluidsynth micro version integer constant. */
+#define FLUIDSYNTH_VERSION_MINOR 4     /**< libfluidsynth minor version integer constant. */
+#define FLUIDSYNTH_VERSION_MICRO 8     /**< libfluidsynth micro version integer constant. */
 
 FLUIDSYNTH_API void fluid_version(int *major, int *minor, int *micro);
 FLUIDSYNTH_API char* fluid_version_str(void);
