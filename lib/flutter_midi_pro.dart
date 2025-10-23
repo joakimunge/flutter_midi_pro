@@ -145,4 +145,80 @@ class MidiPro {
   Future<void> dispose() async {
     return FlutterMidiProPlatform.instance.dispose();
   }
+
+  // ===== REVERB CONTROLS =====
+
+  /// Enable or disable the reverb effect
+  ///
+  /// Args:
+  ///   enabled (bool): Whether to enable (true) or disable (false) the reverb effect
+  Future<void> setReverbEnabled(bool enabled) async {
+    return FlutterMidiProPlatform.instance.setReverbEnabled(enabled);
+  }
+
+  /// Set the reverb level/wetDryMix
+  ///
+  /// Args:
+  ///   level (double): Reverb mix level from 0.0 (dry) to 1.0 (wet)
+  Future<void> setReverbLevel(double level) async {
+    return FlutterMidiProPlatform.instance.setReverbLevel(level);
+  }
+
+  /// Set the reverb room size
+  ///
+  /// Args:
+  ///   size (double): Room size from 0.0 (small) to 1.0 (large)
+  Future<void> setReverbRoomSize(double size) async {
+    return FlutterMidiProPlatform.instance.setReverbRoomSize(size);
+  }
+
+  /// Set the reverb damping
+  ///
+  /// Args:
+  ///   damping (double): Damping amount from 0.0 (less damped) to 1.0 (more damped)
+  Future<void> setReverbDamping(double damping) async {
+    return FlutterMidiProPlatform.instance.setReverbDamping(damping);
+  }
+
+  /// Set the reverb width
+  ///
+  /// Args:
+  ///   width (double): Stereo width from 0.0 (mono) to 1.0 (wide stereo)
+  Future<void> setReverbWidth(double width) async {
+    return FlutterMidiProPlatform.instance.setReverbWidth(width);
+  }
+
+  // ===== DELAY CONTROLS =====
+
+  /// Enable or disable the delay effect
+  ///
+  /// Args:
+  ///   enabled (bool): Whether to enable (true) or disable (false) the delay effect
+  Future<void> setDelayEnabled(bool enabled) async {
+    return FlutterMidiProPlatform.instance.setDelayEnabled(enabled);
+  }
+
+  /// Set the delay time
+  ///
+  /// Args:
+  ///   seconds (double): Delay time in seconds from 0.0 to 2.0
+  Future<void> setDelayTime(double seconds) async {
+    return FlutterMidiProPlatform.instance.setDelayTime(seconds);
+  }
+
+  /// Set the delay feedback (number of repetitions)
+  ///
+  /// Args:
+  ///   feedback (double): Feedback amount from 0.0 (no repeats) to 1.0 (infinite)
+  Future<void> setDelayFeedback(double feedback) async {
+    return FlutterMidiProPlatform.instance.setDelayFeedback(feedback);
+  }
+
+  /// Set the delay mix level
+  ///
+  /// Args:
+  ///   mix (double): Mix level from 0.0 (dry) to 1.0 (wet)
+  Future<void> setDelayMix(double mix) async {
+    return FlutterMidiProPlatform.instance.setDelayMix(mix);
+  }
 }

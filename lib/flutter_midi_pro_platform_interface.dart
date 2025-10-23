@@ -39,4 +39,44 @@ abstract class FlutterMidiProPlatform extends PlatformInterface {
   Future<void> dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  // ===== REVERB CONTROLS =====
+
+  Future<void> setReverbEnabled(bool enabled) {
+    throw UnimplementedError('setReverbEnabled() has not been implemented.');
+  }
+
+  Future<void> setReverbLevel(double level) {
+    throw UnimplementedError('setReverbLevel() has not been implemented.');
+  }
+
+  Future<void> setReverbRoomSize(double size) {
+    throw UnimplementedError('setReverbRoomSize() has not been implemented.');
+  }
+
+  Future<void> setReverbDamping(double damping) {
+    throw UnimplementedError('setReverbDamping() has not been implemented.');
+  }
+
+  Future<void> setReverbWidth(double width) {
+    throw UnimplementedError('setReverbWidth() has not been implemented.');
+  }
+
+  // ===== DELAY CONTROLS =====
+
+  Future<void> setDelayEnabled(bool enabled) {
+    throw UnimplementedError('setDelayEnabled() has not been implemented.');
+  }
+
+  Future<void> setDelayTime(double seconds) {
+    throw UnimplementedError('setDelayTime() has not been implemented.');
+  }
+
+  Future<void> setDelayFeedback(double feedback) {
+    throw UnimplementedError('setDelayFeedback() has not been implemented.');
+  }
+
+  Future<void> setDelayMix(double mix) {
+    throw UnimplementedError('setDelayMix() has not been implemented.');
+  }
 }

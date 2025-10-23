@@ -125,6 +125,40 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
         dispose()
         result.success(null)
       }
+
+      // ===== REVERB CONTROLS =====
+      // Note: Android (FluidSynth) doesn't support real-time reverb/delay effects
+      // These are placeholder implementations
+      "setReverbEnabled" -> {
+        result.success(null)
+      }
+      "setReverbLevel" -> {
+        result.success(null)
+      }
+      "setReverbRoomSize" -> {
+        result.success(null)
+      }
+      "setReverbDamping" -> {
+        result.success(null)
+      }
+      "setReverbWidth" -> {
+        result.success(null)
+      }
+
+      // ===== DELAY CONTROLS =====
+      "setDelayEnabled" -> {
+        result.success(null)
+      }
+      "setDelayTime" -> {
+        result.success(null)
+      }
+      "setDelayFeedback" -> {
+        result.success(null)
+      }
+      "setDelayMix" -> {
+        result.success(null)
+      }
+
       else -> result.notImplemented()
     }
   }
