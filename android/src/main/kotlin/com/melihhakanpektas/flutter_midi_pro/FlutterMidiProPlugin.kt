@@ -38,7 +38,7 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
     @JvmStatic
     private external fun dispose()
 
-    // ===== REVERB CONTROLS =====
+    // Reverb controls
     @JvmStatic
     private external fun setReverbEnabled(enabled: Boolean)
     @JvmStatic
@@ -68,17 +68,13 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
           val program = call.argument<Int>("program")?:0
           val audioManager = flutterPluginBinding.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
           
-          // Sesi mute yapma
           audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
           
-          // Soundfont yükleme işlemi (senkron, bloke eden çağrı)
           val sfId = loadSoundfont(path, bank, program)
           delay(250)
           
-          // Sesi tekrar açma
           audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
           
-          // Sonucu ana thread'de Flutter'a iletme
           withContext(Dispatchers.Main) {
             if (sfId == -1) {
               result.error("INVALID_ARGUMENT", "Something went wrong. Check the path of the template soundfont", null)
@@ -138,7 +134,7 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
         result.success(null)
       }
 
-      // ===== REVERB CONTROLS =====
+      // Reverb Controls
       "setReverbEnabled" -> {
         val enabled = call.argument<Boolean>("enabled") ?: false
         setReverbEnabled(enabled)
@@ -165,7 +161,7 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
         result.success(null)
       }
 
-      // ===== DELAY CONTROLS =====
+      // Delay Controls
       "setDelayEnabled" -> {
         result.success(null)
       }

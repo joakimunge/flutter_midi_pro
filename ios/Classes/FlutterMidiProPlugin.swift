@@ -10,11 +10,9 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
   var soundfontSamplers: [Int: [AVAudioUnitSampler]] = [:]
   var soundfontURLs: [Int: URL] = [:]
 
-  // Global effect nodes (shared across all soundfonts)
-  var reverbNode = AVAudioUnitReverb()
-  var delayNode = AVAudioUnitDelay()
-  var effectsEngine = AVAudioEngine()
-  var effectsInitialized = false
+  // Effect nodes per soundfont per channel
+  var reverbNodes: [Int: [AVAudioUnitReverb]] = [:]
+  var delayNodes: [Int: [AVAudioUnitDelay]] = [:]
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "flutter_midi_pro", binaryMessenger: registrar.messenger())
@@ -22,25 +20,9 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-  private func initializeEffects() {
-    if !effectsInitialized {
-      effectsEngine.attach(reverbNode)
-      effectsEngine.attach(delayNode)
-
-      // Initialize with effects bypassed
-      reverbNode.wetDryMix = 0.0
-      delayNode.wetDryMix = 0.0
-      delayNode.delayTime = 0.5
-      delayNode.feedback = 50.0
-
-      effectsInitialized = true
-    }
-  }
-
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "loadSoundfont":
-        initializeEffects()
         let args = call.arguments as! [String: Any]
         let path = args["path"] as! String
         let bank = args["bank"] as! Int
@@ -48,17 +30,27 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         let url = URL(fileURLWithPath: path)
         var chSamplers: [AVAudioUnitSampler] = []
         var chAudioEngines: [AVAudioEngine] = []
+        var chReverbNodes: [AVAudioUnitReverb] = []
+        var chDelayNodes: [AVAudioUnitDelay] = []
+
         for _ in 0...15 {
             let sampler = AVAudioUnitSampler()
             let audioEngine = AVAudioEngine()
-            audioEngine.attach(sampler)
+            let reverb = AVAudioUnitReverb()
+            let delay = AVAudioUnitDelay()
 
-            // Connect: sampler -> delay -> reverb -> output
-            audioEngine.attach(delayNode)
-            audioEngine.attach(reverbNode)
-            audioEngine.connect(sampler, to: delayNode, format: nil)
-            audioEngine.connect(delayNode, to: reverbNode, format: nil)
-            audioEngine.connect(reverbNode, to: audioEngine.mainMixerNode, format:nil)
+            audioEngine.attach(sampler)
+            audioEngine.attach(delay)
+            audioEngine.attach(reverb)
+
+            audioEngine.connect(sampler, to: delay, format: nil)
+            audioEngine.connect(delay, to: reverb, format: nil)
+            audioEngine.connect(reverb, to: audioEngine.mainMixerNode, format:nil)
+
+            reverb.wetDryMix = 0.0
+            delay.wetDryMix = 0.0
+            delay.delayTime = 0.5
+            delay.feedback = 50.0
 
             do {
                 try audioEngine.start()
@@ -78,10 +70,14 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
             }
             chSamplers.append(sampler)
             chAudioEngines.append(audioEngine)
+            chReverbNodes.append(reverb)
+            chDelayNodes.append(delay)
         }
         soundfontSamplers[soundfontIndex] = chSamplers
         soundfontURLs[soundfontIndex] = url
         audioEngines[soundfontIndex] = chAudioEngines
+        reverbNodes[soundfontIndex] = chReverbNodes
+        delayNodes[soundfontIndex] = chDelayNodes
         soundfontIndex += 1
         result(soundfontIndex-1)
     case "stopAllNotes":
@@ -92,8 +88,10 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
             result(FlutterError(code: "SOUND_FONT_NOT_FOUND", message: "Soundfont not found", details: nil))
             return
         }
-        soundfontSampler!.forEach { (sampler) in
-            sampler.stopAllNotes()
+        soundfontSampler!.enumerated().forEach { (channel, sampler) in
+            for note in 0...127 {
+                sampler.stopNote(UInt8(note), onChannel: UInt8(channel))
+            }
         }
         result(nil)
     case "selectInstrument":
@@ -147,6 +145,8 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         audioEngines.removeValue(forKey: sfId)
         soundfontSamplers.removeValue(forKey: sfId)
         soundfontURLs.removeValue(forKey: sfId)
+        reverbNodes.removeValue(forKey: sfId)
+        delayNodes.removeValue(forKey: sfId)
         result(nil)
     case "dispose":
         audioEngines.forEach { (key, value) in
@@ -156,82 +156,99 @@ public class FlutterMidiProPlugin: NSObject, FlutterPlugin {
         }
         audioEngines = [:]
         soundfontSamplers = [:]
+        reverbNodes = [:]
+        delayNodes = [:]
         result(nil)
 
-    // ===== REVERB CONTROLS =====
-
+    // Reverb Controls
     case "setReverbEnabled":
         let args = call.arguments as! [String: Any]
         let enabled = args["enabled"] as! Bool
-        if enabled {
-            reverbNode.loadFactoryPreset(.mediumHall)
-            reverbNode.wetDryMix = 40.0 // Default 40% wet
-        } else {
-            reverbNode.wetDryMix = 0.0
+        reverbNodes.values.forEach { nodes in
+            nodes.forEach { reverb in
+                if enabled {
+                    reverb.loadFactoryPreset(.mediumHall)
+                    reverb.wetDryMix = 40.0
+                } else {
+                    reverb.wetDryMix = 0.0
+                }
+            }
         }
         result(nil)
 
     case "setReverbLevel":
         let args = call.arguments as! [String: Any]
         let level = args["level"] as! Double
-        // Convert 0.0-1.0 to 0-100 for wetDryMix
-        reverbNode.wetDryMix = Float(level * 100.0)
+        reverbNodes.values.forEach { nodes in
+            nodes.forEach { reverb in
+                reverb.wetDryMix = Float(level * 100.0)
+            }
+        }
         result(nil)
 
     case "setReverbRoomSize":
-        // Note: AVAudioUnitReverb uses presets, so we switch presets based on room size
         let args = call.arguments as! [String: Any]
         let size = args["size"] as! Double
-        if size < 0.3 {
-            reverbNode.loadFactoryPreset(.smallRoom)
-        } else if size < 0.6 {
-            reverbNode.loadFactoryPreset(.mediumRoom)
-        } else {
-            reverbNode.loadFactoryPreset(.largeHall)
+        reverbNodes.values.forEach { nodes in
+            nodes.forEach { reverb in
+                if size < 0.3 {
+                    reverb.loadFactoryPreset(.smallRoom)
+                } else if size < 0.6 {
+                    reverb.loadFactoryPreset(.mediumRoom)
+                } else {
+                    reverb.loadFactoryPreset(.largeHall)
+                }
+            }
         }
         result(nil)
 
     case "setReverbDamping":
         // AVAudioUnitReverb doesn't have direct damping control
-        // This is handled by the preset selection
         result(nil)
 
     case "setReverbWidth":
         // AVAudioUnitReverb doesn't have direct width control
-        // This is handled by the preset selection
         result(nil)
-
-    // ===== DELAY CONTROLS =====
-
+        
+    // Delay Controls
     case "setDelayEnabled":
         let args = call.arguments as! [String: Any]
         let enabled = args["enabled"] as! Bool
-        if enabled {
-            delayNode.wetDryMix = 50.0 // Default 50% wet
-        } else {
-            delayNode.wetDryMix = 0.0
+        delayNodes.values.forEach { nodes in
+            nodes.forEach { delay in
+                delay.wetDryMix = enabled ? 50.0 : 0.0
+            }
         }
         result(nil)
 
     case "setDelayTime":
         let args = call.arguments as! [String: Any]
         let seconds = args["seconds"] as! Double
-        // Clamp to valid range (0.0 - 2.0 seconds)
-        delayNode.delayTime = min(max(seconds, 0.0), 2.0)
+        delayNodes.values.forEach { nodes in
+            nodes.forEach { delay in
+                delay.delayTime = min(max(seconds, 0.0), 2.0)
+            }
+        }
         result(nil)
 
     case "setDelayFeedback":
         let args = call.arguments as! [String: Any]
         let feedback = args["feedback"] as! Double
-        // Convert 0.0-1.0 to -100.0 to 100.0 range
-        delayNode.feedback = Float(feedback * 100.0)
+        delayNodes.values.forEach { nodes in
+            nodes.forEach { delay in
+                delay.feedback = Float(feedback * 100.0)
+            }
+        }
         result(nil)
 
     case "setDelayMix":
         let args = call.arguments as! [String: Any]
         let mix = args["mix"] as! Double
-        // Convert 0.0-1.0 to 0-100 for wetDryMix
-        delayNode.wetDryMix = Float(mix * 100.0)
+        delayNodes.values.forEach { nodes in
+            nodes.forEach { delay in
+                delay.wetDryMix = Float(mix * 100.0)
+            }
+        }
         result(nil)
 
     default:
