@@ -58,6 +58,45 @@ Use the `stopMidiNote` function to stop a MIDI note with a given MIDI number. Th
 midiPro.stopNote(sfId: soundfontId, channel: 0, key: 60);
 ```
 
+### Audio Effects
+
+The plugin provides reverb and delay audio effects that can be controlled in real-time. These effects are available on Android (using FluidSynth), iOS, and macOS platforms.
+
+#### Reverb Controls
+
+```dart
+// Enable or disable reverb
+await midiPro.setReverbEnabled(true);
+
+// Set reverb level (0.0 = dry, 1.0 = wet)
+await midiPro.setReverbLevel(0.7);
+
+// Set room size (0.0 = small, 1.0 = large)
+await midiPro.setReverbRoomSize(0.5);
+
+// Set damping (0.0 = less damped, 1.0 = more damped)
+await midiPro.setReverbDamping(0.3);
+
+// Set stereo width (0.0 = mono, 1.0 = wide stereo)
+await midiPro.setReverbWidth(0.8);
+```
+
+#### Delay Controls
+
+```dart
+// Enable or disable delay
+await midiPro.setDelayEnabled(true);
+
+// Set delay time in seconds (0.0 to 2.0)
+await midiPro.setDelayTime(0.5);
+
+// Set feedback amount (0.0 = no repeats, 1.0 = infinite)
+await midiPro.setDelayFeedback(0.4);
+
+// Set delay mix level (0.0 = dry, 1.0 = wet)
+await midiPro.setDelayMix(0.3);
+```
+
 ## Example
 
 Here's an example of how you could use the `flutter_midi_pro` plugin to play a piano using a SoundFont file and using the `flutter_piano_pro`:

@@ -62,3 +62,19 @@
 
 - Support for 16kb page size
 - Version bump for android side
+
+## 3.2.0
+
+- Added reverb audio effect controls:
+  - `setReverbEnabled()` - Enable or disable reverb
+  - `setReverbLevel()` - Control reverb wet/dry mix (0.0-1.0)
+  - `setReverbRoomSize()` - Control room size (0.0-1.0)
+  - `setReverbDamping()` - Control damping amount (0.0-1.0)
+  - `setReverbWidth()` - Control stereo width (0.0-1.0)
+- Added delay audio effect controls:
+  - `setDelayEnabled()` - Enable or disable delay
+  - `setDelayTime()` - Control delay time in seconds (0.0-2.0)
+  - `setDelayFeedback()` - Control feedback/repeats (0.0-1.0)
+  - `setDelayMix()` - Control delay wet/dry mix (0.0-1.0)
+- Implemented FluidSynth reverb for Android platform
+- Fixed initialization of audio effects
