@@ -37,6 +37,18 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
     private external fun unloadSoundfont(sfId: Int)
     @JvmStatic
     private external fun dispose()
+
+    // ===== REVERB CONTROLS =====
+    @JvmStatic
+    private external fun setReverbEnabled(enabled: Boolean)
+    @JvmStatic
+    private external fun setReverbLevel(level: Double)
+    @JvmStatic
+    private external fun setReverbRoomSize(size: Double)
+    @JvmStatic
+    private external fun setReverbDamping(damping: Double)
+    @JvmStatic
+    private external fun setReverbWidth(width: Double)
   }
 
   private lateinit var channel : MethodChannel
@@ -125,6 +137,48 @@ class FlutterMidiProPlugin: FlutterPlugin, MethodCallHandler {
         dispose()
         result.success(null)
       }
+
+      // ===== REVERB CONTROLS =====
+      "setReverbEnabled" -> {
+        val enabled = call.argument<Boolean>("enabled") ?: false
+        setReverbEnabled(enabled)
+        result.success(null)
+      }
+      "setReverbLevel" -> {
+        val level = call.argument<Double>("level") ?: 0.0
+        setReverbLevel(level)
+        result.success(null)
+      }
+      "setReverbRoomSize" -> {
+        val size = call.argument<Double>("size") ?: 0.0
+        setReverbRoomSize(size)
+        result.success(null)
+      }
+      "setReverbDamping" -> {
+        val damping = call.argument<Double>("damping") ?: 0.0
+        setReverbDamping(damping)
+        result.success(null)
+      }
+      "setReverbWidth" -> {
+        val width = call.argument<Double>("width") ?: 0.0
+        setReverbWidth(width)
+        result.success(null)
+      }
+
+      // ===== DELAY CONTROLS =====
+      "setDelayEnabled" -> {
+        result.success(null)
+      }
+      "setDelayTime" -> {
+        result.success(null)
+      }
+      "setDelayFeedback" -> {
+        result.success(null)
+      }
+      "setDelayMix" -> {
+        result.success(null)
+      }
+
       else -> result.notImplemented()
     }
   }

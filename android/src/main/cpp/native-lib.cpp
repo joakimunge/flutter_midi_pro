@@ -75,3 +75,61 @@ Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_dispose(JNIEnv
     drivers.clear();
     soundfonts.clear();
 }
+
+// ===== REVERB CONTROLS =====
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_setReverbEnabled(JNIEnv* env, jclass clazz, jboolean enabled) {
+    // Apply to all synths
+    for (auto const& synth : synths) {
+        fluid_synth_reverb_on(synth.second, -1, enabled ? 1 : 0);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_setReverbLevel(JNIEnv* env, jclass clazz, jdouble level) {
+    // Apply to all synths
+    for (auto const& synth : synths) {
+        double roomsize = fluid_synth_get_reverb_roomsize(synth.second);
+        double damping = fluid_synth_get_reverb_damp(synth.second);
+        double width = fluid_synth_get_reverb_width(synth.second);
+        // Set with new level (0.0-1.0)
+        fluid_synth_set_reverb(synth.second, roomsize, damping, width, level);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_setReverbRoomSize(JNIEnv* env, jclass clazz, jdouble size) {
+    // Apply to all synths
+    for (auto const& synth : synths) {
+        double damping = fluid_synth_get_reverb_damp(synth.second);
+        double width = fluid_synth_get_reverb_width(synth.second);
+        double level = fluid_synth_get_reverb_level(synth.second);
+        // FluidSynth roomsize range is 0.0-1.2, we map 0.0-1.0 to 0.0-1.2
+        fluid_synth_set_reverb(synth.second, size * 1.2, damping, width, level);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_setReverbDamping(JNIEnv* env, jclass clazz, jdouble damping) {
+    // Apply to all synths
+    for (auto const& synth : synths) {
+        double roomsize = fluid_synth_get_reverb_roomsize(synth.second);
+        double width = fluid_synth_get_reverb_width(synth.second);
+        double level = fluid_synth_get_reverb_level(synth.second);
+        // Set with new damping (0.0-1.0)
+        fluid_synth_set_reverb(synth.second, roomsize, damping, width, level);
+    }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_melihhakanpektas_flutter_1midi_1pro_FlutterMidiProPlugin_setReverbWidth(JNIEnv* env, jclass clazz, jdouble width) {
+    // Apply to all synths
+    for (auto const& synth : synths) {
+        double roomsize = fluid_synth_get_reverb_roomsize(synth.second);
+        double damping = fluid_synth_get_reverb_damp(synth.second);
+        double level = fluid_synth_get_reverb_level(synth.second);
+        // FluidSynth width range is 0.0-100.0, we map 0.0-1.0 to 0.0-100.0
+        fluid_synth_set_reverb(synth.second, roomsize, damping, width * 100.0, level);
+    }
+}

@@ -45,4 +45,53 @@ class MethodChannelFlutterMidiPro extends FlutterMidiProPlatform {
   Future<void> dispose() async {
     await _channel.invokeMethod('dispose');
   }
+
+  // ===== REVERB CONTROLS =====
+
+  @override
+  Future<void> setReverbEnabled(bool enabled) async {
+    await _channel.invokeMethod('setReverbEnabled', {'enabled': enabled});
+  }
+
+  @override
+  Future<void> setReverbLevel(double level) async {
+    await _channel.invokeMethod('setReverbLevel', {'level': level});
+  }
+
+  @override
+  Future<void> setReverbRoomSize(double size) async {
+    await _channel.invokeMethod('setReverbRoomSize', {'size': size});
+  }
+
+  @override
+  Future<void> setReverbDamping(double damping) async {
+    await _channel.invokeMethod('setReverbDamping', {'damping': damping});
+  }
+
+  @override
+  Future<void> setReverbWidth(double width) async {
+    await _channel.invokeMethod('setReverbWidth', {'width': width});
+  }
+
+  // ===== DELAY CONTROLS =====
+
+  @override
+  Future<void> setDelayEnabled(bool enabled) async {
+    await _channel.invokeMethod('setDelayEnabled', {'enabled': enabled});
+  }
+
+  @override
+  Future<void> setDelayTime(double seconds) async {
+    await _channel.invokeMethod('setDelayTime', {'seconds': seconds});
+  }
+
+  @override
+  Future<void> setDelayFeedback(double feedback) async {
+    await _channel.invokeMethod('setDelayFeedback', {'feedback': feedback});
+  }
+
+  @override
+  Future<void> setDelayMix(double mix) async {
+    await _channel.invokeMethod('setDelayMix', {'mix': mix});
+  }
 }
